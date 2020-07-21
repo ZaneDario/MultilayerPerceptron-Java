@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 public class Perceptron {
 
@@ -7,14 +8,14 @@ public class Perceptron {
     float learningRatio;
     float allowedError;
     float realError = 9999;
-    int maxIterations = 1000000;
+    int maxIterations = 10000000;
     List<float[][]> deltas;
     List<float[]> sigmas;
 
     Perceptron(int numOfLayers)
     {
-        learningRatio = 0.2f;
-        allowedError = 0.01f;
+        learningRatio = 0.25f;
+        allowedError = 0.02f;
         layers = new Layer[numOfLayers];
 
         for (int i = 0; i < numOfLayers; i++) {
@@ -24,8 +25,8 @@ public class Perceptron {
 
             prevNeurons = i == 0 ? 1 : neuronsPerLayer[i-1];
             float[][] d = new float[neuronsPerLayer[i]][prevNeurons];
-            deltas.add(d);
-            sigmas.add(new float[neuronsPerLayer[i]]);
+            //deltas.add(d);
+            //sigmas.add(new float[neuronsPerLayer[i]]);
         }
 
         Learn(allowedError, maxIterations);
@@ -35,11 +36,21 @@ public class Perceptron {
     {
         Examples e = new Examples();
 
-        for (int j = 0; (j < iterations) && (realError > allowedE); j++) {
-            Activate(e);
-            realError = CalculateError(e);
-            ModifyWeights(e);
+        for (int j = 0; j < iterations ; j++) {
+            if((realError > allowedE) || (realError < -allowedE))
+            {
+                Activate(e);
+                ModifyWeights(learningRatio, CalculateError(e));
+            }
+            else
+            {
+                System.out.println("Error adjusted.");
+                break;
+            }
+
         }
+
+        System.out.println("Finished.");
     }
 
     void Activate(Examples e)
@@ -56,13 +67,23 @@ public class Perceptron {
         }
     }
 
-    void ModifyWeights(Examples e)
+    void ModifyWeights(float lRate, float err)
     {
-
+        for (Layer layer : layers) {
+            for (int j = 0; j < layer.neurons.length; j++) {
+                for (int k = 0; k < layer.neurons[j].weights.length; k++) {
+                    Random r = new Random();
+                    layer.neurons[j].weights[k] -= lRate * err;
+                }
+            }
+        }
     }
 
     float CalculateError(Examples e)
     {
-        return Math.abs(layers[layers.length-1].outputs[0] - e.output[0]);
+        float n = layers[layers.length-1].outputs[0];
+        realError = n - e.output[0];
+        System.out.println(realError);
+        return realError * Maths.InverseSigmoid(n);
     }
 }
