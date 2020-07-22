@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 public class Perceptron {
 
@@ -8,6 +7,7 @@ public class Perceptron {
     float learningRatio;
     float allowedError;
     float realError = 9999;
+    float prevError = 0;
     int maxIterations = 10000000;
     List<float[][]> deltas;
     List<float[]> sigmas;
@@ -47,7 +47,6 @@ public class Perceptron {
                 System.out.println("Error adjusted.");
                 break;
             }
-
         }
 
         System.out.println("Finished.");
@@ -72,7 +71,6 @@ public class Perceptron {
         for (Layer layer : layers) {
             for (int j = 0; j < layer.neurons.length; j++) {
                 for (int k = 0; k < layer.neurons[j].weights.length; k++) {
-                    Random r = new Random();
                     layer.neurons[j].weights[k] -= lRate * err;
                 }
             }
@@ -83,6 +81,15 @@ public class Perceptron {
     {
         float n = layers[layers.length-1].outputs[0];
         realError = n - e.output[0];
+
+        if(prevError == realError)
+        {
+            learningRatio += 0.015f;
+            System.out.println("Modifying LR.");
+        }
+
+
+        prevError = realError;
         System.out.println(realError);
         return realError * Maths.InverseSigmoid(n);
     }
