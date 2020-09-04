@@ -17,4 +17,6 @@ public class Maths {
         }
         return sum;
     }
+
+    public static int limit = 1; //To get results from zero to numbers bigger than one.
 }

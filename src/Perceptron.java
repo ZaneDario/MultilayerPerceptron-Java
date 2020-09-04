@@ -113,7 +113,7 @@ public class Perceptron {
                 layers[i].Activate(layers[i-1].outputs);
 
                 if(i == layers.length - 1){
-                    System.out.println(layers[i].neurons[0].output);
+                    System.out.println(layers[i].neurons[0].output * Maths.limit);
                 }
             }
         }
