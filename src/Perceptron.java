@@ -6,15 +6,15 @@ public class Perceptron {
     int[] neuronsPerLayer = {2,4,6,6,6,3,1};
     float learningRatio;
     float allowedError;
-    float realError = 9999;
-    float prevError = 0;
+    float[] realError;
+    float[] prevError;
     int maxIterations = 10000000;
     List<float[][]> deltas;
     List<float[]> sigmas;
 
     Perceptron(int numOfLayers)
     {
-        learningRatio = 0.25f;
+        learningRatio = 0.07f;
         allowedError = 0.02f;
         layers = new Layer[numOfLayers];
 
@@ -36,13 +36,20 @@ public class Perceptron {
     {
         Examples e = new Examples();
 
+        realError = new float[e.input.length];
+        for (int ind = 0; ind < realError.length; ind++) { realError[ind] = 9999; }
+
+        prevError = new float[e.input.length];
+
         for (int j = 0; j < iterations ; j++) {
-            if((realError > allowedE) || (realError < -allowedE))
-            {
-                Activate(e);
-                ModifyWeights(learningRatio, CalculateError(e));
+            for (int i = 0; i < e.input.length; i++) {
+                    Activate(e, i);
+                    ModifyWeights(learningRatio, CalculateError(e, i));
             }
-            else
+
+            float error = Maths.ArraySum(realError);
+            System.out.println(error);
+            if(!((error > allowedE) || (error < -allowedE)))
             {
                 System.out.println("Error adjusted.");
                 break;
@@ -52,12 +59,12 @@ public class Perceptron {
         System.out.println("Finished.");
     }
 
-    void Activate(Examples e)
+    void Activate(Examples e, int index)
     {
         for (int i = 0; i < layers.length; i++) {
             if(i == 0)
             {
-                layers[i].Activate(e.input[0]);
+                layers[i].Activate(e.input[index]);
             }
             else
             {
@@ -77,20 +84,37 @@ public class Perceptron {
         }
     }
 
-    float CalculateError(Examples e)
+    float CalculateError(Examples e, int index)
     {
         float n = layers[layers.length-1].outputs[0];
-        realError = n - e.output[0];
+        realError[index] = n - e.output[index];
 
-        if(prevError == realError)
+        if(prevError[index] == realError[index])
         {
             learningRatio += 0.015f;
             System.out.println("Modifying LR.");
         }
 
+        prevError[index] = realError[index];
+        System.out.println(index + " ---> " + realError[index]);
+        return realError[index] * Maths.InverseSigmoid(n);
+    }
 
-        prevError = realError;
-        System.out.println(realError);
-        return realError * Maths.InverseSigmoid(n);
+    public void Check(float[] inp)
+    {
+        for (int i = 0; i < layers.length; i++) {
+            if(i == 0)
+            {
+                layers[i].Activate(inp);
+            }
+            else
+            {
+                layers[i].Activate(layers[i-1].outputs);
+
+                if(i == layers.length - 1){
+                    System.out.println(layers[i].neurons[0].output);
+                }
+            }
+        }
     }
 }

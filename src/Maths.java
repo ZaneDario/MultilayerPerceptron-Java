@@ -8,4 +8,13 @@ public class Maths {
     {
         return (1 - Sigmoid(n)) * Sigmoid(n);
     }
+
+    public static float ArraySum(float[] array)
+    {
+        float sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            sum = Math.abs(array[i]);
+        }
+        return sum;
+    }
 }
