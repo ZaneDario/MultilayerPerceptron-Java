@@ -14,7 +14,7 @@ public class Perceptron {
 
     Perceptron(int numOfLayers)
     {
-        learningRatio = 0.2f;
+        learningRatio = 0.012f;
         allowedError = 0.02f;
         layers = new Layer[numOfLayers];
 
