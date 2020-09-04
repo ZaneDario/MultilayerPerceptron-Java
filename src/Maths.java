@@ -13,7 +13,7 @@ public class Maths {
     {
         float sum = 0;
         for (int i = 0; i < array.length; i++) {
-            sum = Math.abs(array[i]);
+            sum += Math.abs(array[i]);
         }
         return sum;
     }

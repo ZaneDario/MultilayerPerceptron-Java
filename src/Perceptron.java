@@ -8,13 +8,13 @@ public class Perceptron {
     float allowedError;
     float[] realError;
     float[] prevError;
-    int maxIterations = 10000000;
+    int maxIterations = 100000000;
     List<float[][]> deltas;
     List<float[]> sigmas;
 
     Perceptron(int numOfLayers)
     {
-        learningRatio = 0.07f;
+        learningRatio = 0.25f;
         allowedError = 0.02f;
         layers = new Layer[numOfLayers];
 
@@ -78,7 +78,8 @@ public class Perceptron {
         for (Layer layer : layers) {
             for (int j = 0; j < layer.neurons.length; j++) {
                 for (int k = 0; k < layer.neurons[j].weights.length; k++) {
-                    layer.neurons[j].weights[k] -= lRate * err;
+                    float r = layer.neurons[j].r.nextFloat();
+                    layer.neurons[j].weights[k] -= lRate * err * r;
                 }
             }
         }
